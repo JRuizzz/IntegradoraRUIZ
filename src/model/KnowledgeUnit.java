@@ -26,7 +26,6 @@ public class KnowledgeUnit {
 	 * @param learnedLessons String
 	 */
 	public KnowledgeUnit(String id, String description, Type type, String learnedLessons, String colaboratorName, String charge, Status Status, Calendar dateProject,String projectUnit, String Publish, String URL) {
-
 		this.id = id;
 		this.description = description;
 		this.type = type;
@@ -157,34 +156,14 @@ public class KnowledgeUnit {
 	public void setDateProjectFormated(Calendar dateProject){
 		this.dateProject=dateProject;
 	}
-	
-	public String toStringU(){
-		String msg="";
-		msg ="Project "+projectUnit+"\nID "+ id + "\nDescription: " + description+ "\nType: "+ type+"\nLearned Lessons: "+learnedLessons+"\nStatus: "+status+"\nColaborator Name: "+colaboratorName+"\nColaborator Charge: "+charge;
-		return msg;
-	}
-
-	public String toStringUM(){
+	public String toStringKU(){
 		String msg="";
 		msg ="Project: "+projectUnit+"\nPublicate: "+Publish+"\nURL: "+URL+"\n"+"\n-ID: "+ id + "\nDescription: " + description+ "\n-Type: "+ type+"\nLearned Lessons:"+learnedLessons+"\n-Status: "+ status+"\nColaborator Name: "+ colaboratorName+"\n-Charge: "+charge+"\nApprove date: "+getDateProjectFormated();
 		return msg;
 	}
-	
-	public String toStringUMm(){
-		String msg="";
-		msg ="Project: "+projectUnit+"\nPublicate: "+Publish+"\nID: "+ id+ "\nType: "+ type +"\nStatus: "+status+"\n";
-		return msg;
-	}
-
-	public String toStringUMmF(){
-		String msg="";
-		msg ="Project: "+projectUnit+"\nPublicate: "+Publish+"\nURL: "+URL+"\nID "+ id+ "\nType "+ type+"\nStatus "+ status +"\nApprove Date: "+getDateProjectFormated();
-		return msg;
-	}
 	public String getProjectUnit() {
 		return projectUnit;
-	}
-	
+	}	
 }
 
 

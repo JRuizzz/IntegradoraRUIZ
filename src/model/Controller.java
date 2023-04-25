@@ -34,57 +34,41 @@ public class Controller {
         return fecha;
     }
 
-	public String showProjects(){
-        String msg="";
-        for (int i=0; i<projects.length;i++){
-            if(projects[i] == null){
-				return msg;
-			} else {
-				msg +="\n"+(i+1)+". "+ projects[i].toStringProject();
-			}
-			} 
-            return msg;
-        }
-        
-
-    public boolean editStage(int opcionStage, int months){
-            
-		boolean indicador3=false;
-    
-            if(indicador3==false){
-                int StageActive=projects[opcionStage].getActiveStage();
-                Calendar startMonth=projects[opcionStage].getliStages()[StageActive].getStartPlannedDate();
-                Calendar finalMonth=new GregorianCalendar();
-                finalMonth.setTime(startMonth.getTime());
-                finalMonth.add(Calendar.MONTH, months);
-                projects[opcionStage].getliStages()[StageActive].setFinalPlannedDate(finalMonth);
-    
-                indicador3=true;
+	public String showProjects() {
+        String msg = "";
+        for (int i = 0; i < projects.length; i++) {
+            if (projects[i] != null) {
+                msg += (i + 1) + ". " + projects[i].toStringProject() + "\n";
             }
-    
-            return indicador3;
-    
-    }
-    
-    public boolean CulminateStage(int opcionStage, int dateDIR, int dateMIR, int dateAIR, int dateDFR,int dateMFR, int dateAFR){
-        boolean indicador4=false;
-            
-    
-        Calendar newStartRealDate= newDate(dateDIR, dateMIR,dateAIR);
-        
-		Calendar newFinalRealDate = newDate(dateDFR, dateMFR,dateAFR);
-    
-        if (indicador4==false){
-            int StageActive=projects[opcionStage].getActiveStage();
-            projects[opcionStage].getliStages()[StageActive].setStartPlannedDate(newStartRealDate);
-            projects[opcionStage].getliStages()[StageActive].setFinalPlannedDate(newFinalRealDate);
-            projects[opcionStage].getliStages()[StageActive].setState(State.INACTIVE);
-            projects[opcionStage].getliStages()[StageActive+1].setState(State.ACTIVE);
-            indicador4=true;
         }
-
-        return indicador4;
+        return msg;
     }
+    
+    public boolean editStage(int opcionStage, int months) {
+        Calendar startMonth = projects[opcionStage].getliStages()[projects[opcionStage].getActiveStage()].getStartPlannedDate();
+        startMonth.add(Calendar.MONTH, months);
+        projects[opcionStage].getliStages()[projects[opcionStage].getActiveStage()].setFinalPlannedDate(startMonth);
+        return true;
+    }
+    
+        
+    
+    public boolean culminateStage(int opcionStage, int dayR, int monthR, int yearR, int dayRF, int monthRF, int yearRF) {
+        int activeStage = projects[opcionStage].getActiveStage();
+        Calendar newStartRealDate = newDate(dayR, monthR, yearR);
+        Calendar newFinalRealDate = newDate(dayRF, monthRF, yearRF);
+        
+        if (activeStage >= 0 && activeStage < projects[opcionStage].getliStages().length - 1) {
+            projects[opcionStage].getliStages()[activeStage].setStartPlannedDate(newStartRealDate);
+            projects[opcionStage].getliStages()[activeStage].setFinalPlannedDate(newFinalRealDate);
+            projects[opcionStage].getliStages()[activeStage].setState(State.INACTIVE);
+            projects[opcionStage].getliStages()[activeStage + 1].setState(State.ACTIVE);
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
         
     public String showStagesActive(int opcionStage){
         String msg="";
@@ -103,17 +87,21 @@ public class Controller {
            return msg;
        }
 
-       public String showStagesHistorial(int opcionStage){
-            String msg="";
-            int StageActive=projects[opcionStage].getActiveStage();
-            for (int i=0;i<StageActive+1;i++){
-                msg+="\n"+(i+1)+"."+projects[opcionStage].getliStages()[i].toStringStage();
+       public String showStagesHistorial(String projectName){
+        String msg="";
+        for (int i=0; i<projects.length; i++){
+            if (projects[i] != null && projects[i].getProjectName().equalsIgnoreCase(projectName)){
+                int StageActive=projects[i].getActiveStage();
+                for (int j=0; j<StageActive+1; j++){
+                    msg+="\n"+(j+1)+"."+projects[i].getliStages()[j].toStringStage();
+                }
+                break;
             }
-            return msg;
-       }
- 
-
-    public boolean registerUnit(String id, String description, int type, String learnedLessons, String colaboratorName, String charge, int opcionProject) {
+        }
+        return msg;
+    }
+    
+       public boolean registerKU(String id, String description, int type, String learnedLessons, String colaboratorName, String charge, int opcionProject) {
         Project unit=projects[opcionProject];
         String projectUnit=unit.getProjectName();
 		String URL="None";
@@ -139,156 +127,216 @@ public class Controller {
    
 		
 		return indicador5;
-	}
+       }
+	
 
-    public String showAllUnit(int opcionProject){
-        String msg="";
-        int StageActive=projects[opcionProject].getActiveStage();
-        for (int i=0; i<50; i++){
-            if (projects[opcionProject].getliStages()[StageActive].getUnits()[i]==null){
-                return msg;
-            }else{
-                msg+="\n"+(i+1)+"."+projects[opcionProject].getliStages()[StageActive].getUnits()[i].toStringUMm();
-            }
-        }
-        return msg;
-    }
     
-    public String showLastUnit(int opcionProject){
+    public String showLastUnit(String projectName){
         String msg="";
-        int StageActive=projects[opcionProject].getActiveStage();
-        for (int i=0; i<50; i++){
-            if (i>0 && projects[opcionProject].getliStages()[StageActive].getUnits()[i]==null){
-                msg+=projects[opcionProject].getliStages()[StageActive].getUnits()[i-1].toStringU();
-                return msg;
+        Project project = null;
+        for (int i = 0; i < projects.length; i++) {
+            if (projects[i] != null && projects[i].getProjectName().equalsIgnoreCase(projectName)) {
+                project = projects[i];
+                break;
+            }
+        }
+        if (project != null) {
+            int activeStage = project.getActiveStage();
+            for (int i = 0; i < 50; i++){
+                if (i > 0 && project.getliStages()[activeStage].getUnits()[i] == null){
+                    msg += project.getliStages()[activeStage].getUnits()[i-1].toStringKU();
+                    return msg;
+                }
             }
         }
         return msg;
     }
-
-    public String showUnitSelect(int opcionProject, int numUnit){
+                                
+    
+    public String showAllUnit(String projectName){
         String msg="";
-        int StageActive=projects[opcionProject].getActiveStage();
-        msg=projects[opcionProject].getliStages()[StageActive].getUnits()[numUnit].toStringUMmF();
-        return msg;
-    }
-
-    public boolean approveKnowledgeUnit(int opcionProject, int opcionStage,int numUnit ) {
-		boolean indicador=false;
-        
-        if(indicador==false){
-            projects[opcionProject].getliStages()[opcionStage].getUnits()[numUnit].setStatus(Status.APPROVED);
-            projects[opcionProject].getliStages()[opcionStage].getUnits()[numUnit].setDateProject(Calendar.getInstance());
-            indicador=true;
+        Project project = null;
+        for (int i = 0; i < projects.length; i++) {
+            if (projects[i] != null && projects[i].getProjectName().equalsIgnoreCase(projectName)) {
+                project = projects[i];
+                break;
+            }
         }
-
-        return indicador;
-	}
-
-    public boolean publishKnowledgeUnit(int opcionProject, int opcionStage, int numUnit, String URL){
-        boolean indicador=false;
-        if(indicador==false){
-            projects[opcionProject].getliStages()[opcionStage].getUnits()[numUnit].setURL(URL);
-            projects[opcionProject].getliStages()[opcionStage].getUnits()[numUnit].setPublish("YES");
-            
-            indicador=true;
-        }
-       return indicador;
-    }
-
-    public String showLastpublisUnit(int opcionProject, int opcionStage){
-        String msg="";
-        for(int i=0; i<50; i++){
-            if(projects[opcionProject].getliStages()[opcionStage].getUnits()[i]==null){
-                return msg;
-            }else{
-                String consulta=projects[opcionProject].getliStages()[opcionStage].getUnits()[i].getPublish();
-                if(consulta.equals("YES")){
-                    msg=projects[opcionProject].getliStages()[opcionStage].getUnits()[i].toStringUMmF();
+        if (project != null) {
+            int activeStage = project.getActiveStage();
+            for (int i=0; i<50; i++){
+                if (project.getliStages()[activeStage].getUnits()[i] == null){
+                    return msg;
+                } else {
+                    msg += "\n" + (i+1) + "." + project.getliStages()[activeStage].getUnits()[i].toStringKU();
                 }
             }
         }
         return msg;
     }
 
-    public String showApproveUnit(int opcionProject, int opcionStage){
+
+    public String showUnitSelect(String projectName, int numUnit){
         String msg="";
-        boolean indicador=false;
-        if(indicador==false){
-            for(int i=0; i<50; i++){
-                if(projects[opcionProject].getliStages()[opcionStage].getUnits()[i]==null){
-                    return msg;
-                }else if(projects[opcionProject].getliStages()[opcionStage].getUnits()[i].getStatus()==Status.APPROVED){
-                    msg+=(i+1)+". "+projects[opcionProject].getliStages()[opcionStage].getUnits()[i].toStringUMmF();
-                }else{
-                    return msg;
-                }     
+        int stageActive = -1;
+        for (int i = 0; i < projects.length; i++) {
+            if (projects[i] != null && projects[i].getProjectName().equalsIgnoreCase(projectName)) {
+                stageActive = projects[i].getActiveStage();
+                break;
             }
-            indicador=true;
+        }
+        if (stageActive >= 0) {
+            KnowledgeUnit[] units = projects[stageActive].getliStages()[stageActive].getUnits();
+            if (numUnit >= 0 && numUnit < units.length && units[numUnit] != null) {
+                msg = units[numUnit].toStringKU();
+            }
+        }
+        return msg;
+    }
+    
+
+    public boolean approveKnowledgeUnit(String projectName, int opcionStage, int numUnit) {
+        boolean indicador = false;
+        for (int i = 0; i < projects.length; i++) {
+            if (projects[i] != null) {
+                if (projects[i].getProjectName().equalsIgnoreCase(projectName)) {
+                    if (indicador == false) {
+                        projects[i].getliStages()[opcionStage].getUnits()[numUnit].setStatus(Status.APPROVED);
+                        projects[i].getliStages()[opcionStage].getUnits()[numUnit].setDateProject(Calendar.getInstance());
+                        indicador = true;
+                    }
+                }
+            }
+        }
+        return indicador;
+    }
+    
+
+    public boolean publishKnowledgeUnit(String projectName, int opcionStage, int numUnit, String URL){
+        boolean indicador=false;
+        for(int i=0; i<projects.length; i++){
+            if(projects[i] != null){
+                if(projects[i].getProjectName().equalsIgnoreCase(projectName)){
+                    if(indicador==false){
+                        projects[i].getliStages()[opcionStage].getUnits()[numUnit].setURL(URL);
+                        projects[i].getliStages()[opcionStage].getUnits()[numUnit].setPublish("YES");
+    
+                        indicador=true;
+                    }
+                }
+            }
+        }
+        return indicador;
+    }
+    
+
+    public String showLastpublisUnit(String projectName, int stageOption) {
+        String msg = "";
+        Project project = null;
+        for (Project p : projects) {
+            if (p != null && p.getProjectName().equalsIgnoreCase(projectName)) {
+                project = p;
+                break;
+            }
+        }
+        if (project != null) {
+            KnowledgeUnit[] units = project.getliStages()[stageOption].getUnits();
+            for (KnowledgeUnit unit : units) {
+                if (unit == null) {
+                    break;
+                } else {
+                    String publish = unit.getPublish();
+                    if (publish.equals("YES")) {
+                        msg = unit.toStringKU();
+                    }
+                }
+            }
+        }
+        return msg;
+    }
+    
+
+    public String showApproveUnit(String projectName, int opcionStage){
+        String msg = "";
+        for(Project project : projects){
+            if(project != null && project.getProjectName().equalsIgnoreCase(projectName)){
+                KnowledgeUnit[] units = project.getliStages()[opcionStage].getUnits();
+                for(int i=0; i<units.length; i++){
+                    KnowledgeUnit unit = units[i];
+                    if(unit == null){
+                        break;
+                    }
+                    if(unit.getStatus() == Status.APPROVED){
+                        msg += (i+1) + ". " + unit.toStringKU() + "\n";
+                    }else{
+                        break;
+                    }
+                }
+            }
         }
         return msg;
     }
 
 
-    public String searchPSU(String wordSearch){
-        String msg="";
-        for(int i=0; i<projects.length; i++){
-            if(projects[i]!=null){
-                for (int j=0; j<6;j++){
-                        for(int s=0; s<50;s++){
-                            if(projects[i].getliStages()[j].getUnits()[s]!=null){
-                                if(projects[i].getliStages()[j].getUnits()[s].getDescription().contains(wordSearch)){
-                                    msg+="\nWord founded \n";
-                                    msg+="Proyect: "+projects[i].getProjectName()+"\n";
-                                    msg+="Stage: "+projects[i].getliStages()[j].getStagePhase()+"\n";
-                                    msg+="ID: "+projects[i].getliStages()[j].getUnits()[s].getId()+"\n";
-                                }
+
+    public String searchPSU(String word) {
+        
+        StringBuilder msg = new StringBuilder();
+        
+        for (Project project : projects) {
+            if (project != null) {
+                for (Stage stage : project.getliStages()) {
+                    if (stage != null) {
+                        for (KnowledgeUnit unit : stage.getUnits()) {
+                            if (unit != null && unit.getDescription().contains(word)) {
+                                msg.append("\nWord founded \n");
+                                msg.append("Proyect: ").append(project.getProjectName()).append("\n");
+                                msg.append("Stage: ").append(stage.getStagePhase()).append("\n");
+                                msg.append("ID: ").append(unit.getId()).append("\n");
                             }
                         }
                     }
-                    
-        
-                } 
+                }
+            }
         }
-    
-        return msg;
+        
+        return msg.toString();
     }
+    
 
-    public String numberTypeUnit(){
-        String msg="";
-        int ContadorT=0;
-        int ContadorG=0;
-        int ContadorD=0;
-        int ContadorE=0;
-
-        for(int i=0; i<projects.length; i++){
-            if(projects[i]!=null){
-                for (int j=0; j<6;j++){
-                        for(int s=0; s<50;s++){
-                            if(projects[i].getliStages()[j].getUnits()[s]!=null){
-                                if(projects[i].getliStages()[j].getUnits()[s].getType()==Type.TECHNICAL){
-                                   ContadorT++;
-                                }else if(projects[i].getliStages()[j].getUnits()[s].getType()==Type.MANAGEMENT){
-                                    ContadorG++;
-                                }else if(projects[i].getliStages()[j].getUnits()[s].getType()==Type.EXPERIENCES){
-                                    ContadorE++;
-                                }else if(projects[i].getliStages()[j].getUnits()[s].getType()==Type.DOMAIN){
-                                    ContadorD++;
-                                }
-
-                                msg+="TECHNICAL: "+ContadorT+"\n";
-                                msg+="EXPERIENCES: "+ContadorE+"\n";
-                                msg+="MANAGEMENT: "+ContadorG+"\n";
-                                msg+="DOMAIN: "+ContadorD+"\n";
-                                
+    public String numberTypeUnit() {
+        int[] counters = new int[4];
+        
+        for (Project project : projects) {
+            if (project != null) {
+                for (Stage stage : project.getliStages()) {
+                    for (KnowledgeUnit unit : stage.getUnits()) {
+                        if (unit != null) {
+                            switch (unit.getType()) {
+                                case TECHNICAL:
+                                    counters[0]++;
+                                    break;
+                                case MANAGEMENT:
+                                    counters[1]++;
+                                    break;
+                                case EXPERIENCES:
+                                    counters[2]++;
+                                    break;
+                                case DOMAIN:
+                                    counters[3]++;
+                                    break;
                             }
                         }
                     }
-                    
-        
-                } 
+                }
+            }
         }
-    
-        return msg;
+        
+
+        return "TECHNICAL: " + counters[0] + "\n" +
+               "MANAGEMENT: " + counters[1] + "\n" +
+               "EXPERIENCES: " + counters[2] + "\n" +
+               "DOMAIN: " + counters[3] + "\n";
     }
+    
 }

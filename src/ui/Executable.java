@@ -1,5 +1,6 @@
 package ui;
 
+
 import java.util.Scanner;
 import model.Controller;
 
@@ -58,7 +59,7 @@ public class Executable {
                 break;
       
                 case 4:
-					registerUnits();
+					registerKU();
                 break;
 
 				case 5:
@@ -179,22 +180,22 @@ public class Executable {
 			
 			System.out.println("Enter the starting actual date");
 			System.out.println("Enter the day");
-			int dateDIR=reader.nextInt();
+			int dayR=reader.nextInt();
 			System.out.println("Enter the month");
-			int dateMIR=reader.nextInt();
+			int monthR=reader.nextInt();
 			System.out.println("Enter the year");
-			int dateAIR=reader.nextInt();
+			int yearR=reader.nextInt();
 	
 			System.out.println("Enter actual end date");
 			System.out.println("Enter the day");
-			int dateDFR=reader.nextInt();
+			int dayRF=reader.nextInt();
 			System.out.println("Enter the month");
-			int dateMFR=reader.nextInt();
+			int monthRF=reader.nextInt();
 			System.out.println("Enter the year");
-			int dateAFR=reader.nextInt();
+			int yearRF=reader.nextInt();
 	
 	
-			if (controller.CulminateStage((opcionStage-1), dateDIR, (dateMIR-1), dateAIR, dateDFR, (dateMFR-1), dateAFR)){
+			if (controller.culminateStage((opcionStage-1), dayR, (monthR-1), yearR, dayRF, (monthRF-1), yearRF)){
 				System.out.println("\n Stage completed successfully-");
 				System.out.println("\n"+controller.showLastStages(opcionStage-1));
 				System.out.println("-The next stage is now available-");
@@ -204,30 +205,23 @@ public class Executable {
 	}
 	
 
-	private void registerUnits(){
+	private void registerKU(){
 		String Consulta=controller.showProjects();
 		if (Consulta.equals("")){
 			System.out.println("No projects created yet");
 		}else{
-			System.out.println("Enter the following information:");
 			System.out.println(controller.showProjects());
-			System.out.println("To which project do you want to register the capsule?");
+			System.out.println("Choose the project");
 			int opcionProject=reader.nextInt();
-			System.out.println("\nThe capsule will be registered to the next stage:");
-			System.out.println(controller.showStagesActive((opcionProject-1)));
-			System.out.println("\nKNOWLEDGE CAPSULE CREATION");
-			System.out.println("Enter the capsule identifier (ej B06)");
-			reader.nextLine();
+			System.out.println("Enter the ID");
 			String id=reader.nextLine();
-			System.out.println("Add a description of the capsule");
-			System.out.println("Mark with a ¨#¨ at the beginning and end of each keyword");
+			System.out.println("Type the description with a # at the beginning and end of each keyword");
 			String description=reader.nextLine();
-			System.out.println("\nEnter the type of knowledge unit with a number");
-			System.out.println("1.Technical\n2.Management\n3.Domain\n4.Experiences");
+			System.out.println("\nEnter the type of knowledge");
+			System.out.println("1.Technical\n2.Experience\n.3.Management\n4.Domain");
 			int type=reader.nextInt();
 			reader.nextLine();
-			System.out.println("Enter learning obtained");
-			System.out.println("Mark with a ¨#¨ at the beginning and end of each keyword");
+			System.out.println("Type the learned lessons with a # at the beginning and end of each keyword");
 			String learnedLessons=reader.nextLine();
 			System.out.println("Enter the name of the collaborator");
 			String colaboratorName=reader.nextLine();
@@ -235,10 +229,10 @@ public class Executable {
 			String charge=reader.nextLine();
 			
 
-			if (controller.registerUnit(id, description, type, learnedLessons,colaboratorName,charge, opcionProject-1)){
-				System.out.println("\n-Capsule registered successfully-");
-				System.out.println("     -This is how your capsule was-");
-				System.out.println("\n"+controller.showLastUnit(opcionProject-1)); 
+			if (controller.registerKU(id, description, type, colaboratorName, charge, learnedLessons, opcionProject-1)){
+				System.out.println("Knowledge Unit registered successfully");
+			} else {
+				System.out.println("Cant register the knowledge Unit");
 			}
 		}
 
@@ -254,23 +248,23 @@ public class Executable {
 			System.out.println("Enter the following information:");
 			System.out.println(controller.showProjects());
 			System.out.println("What project do you want to approve the capsule for?");
-			int opcionProject=reader.nextInt();
-			System.out.println(controller.showStagesHistorial(opcionProject-1));
+			String projectName=reader.nextLine();
+			System.out.println(controller.showStagesHistorial(projectName));
 			System.out.println("At what stage do you want to approve the capsule?");
 			int opcionStage=reader.nextInt();
-			String consulta1=controller.showAllUnit(opcionProject-1);
+			String consulta1=controller.showAllUnit(projectName);
 			if(consulta1.equals("")){
 				System.out.println("\nThis stage has no registered capsules");
 			}else{
-				System.out.println(controller.showAllUnit(opcionProject-1));
+				System.out.println(controller.showAllUnit(projectName));
 			System.out.println("\nWhat capsule do you want to approve?");
 			int numUnit=reader.nextInt();
 			reader.nextLine();
             
-            if(controller.approveKnowledgeUnit(opcionProject-1, opcionStage-1,numUnit-1)){
-				System.out.println("\n-Capsule edited correctly-");
-				System.out.println("    This is how your capsule was:");
-			System.out.println("\n"+controller.showUnitSelect(opcionProject-1, numUnit-1));
+            if(controller.approveKnowledgeUnit(projectName, opcionStage-1,numUnit-1)){
+				System.out.println("Capsule edited correctly");
+				System.out.println("This is how your capsule was");
+			System.out.println("\n"+controller.showUnitSelect(projectName, numUnit-1));
 			}
 			}
 			
@@ -286,24 +280,24 @@ public class Executable {
 			System.out.println("\n- Enter the following information:");
 			System.out.println(controller.showProjects());
 			System.out.println("What project is the capsule in?");
-			int opcionProject=reader.nextInt();
-			System.out.println(controller.showStagesHistorial(opcionProject-1));
+			String projectName=reader.nextLine();
+			System.out.println(controller.showStagesHistorial(projectName));
 			System.out.println("What stage is the capsule in?");
 			int opcionStage=reader.nextInt();
-			String consulta1=controller.showApproveUnit(opcionProject-1, opcionStage-1);
+			String consulta1=controller.showApproveUnit(projectName, opcionStage-1);
 			if(consulta1.equals("")){
 				System.out.println("That stage does not have approved capsules");
 			}else{
-				System.out.println("\n"+controller.showApproveUnit(opcionProject-1, opcionStage-1));
+				System.out.println("\n"+controller.showApproveUnit(projectName, opcionStage-1));
 			System.out.println("\nWhat capsule do you want to publish?");
 			int numUnit=reader.nextInt();
 			reader.nextLine();
 			System.out.println("Enter the URL");
 			String URL=reader.nextLine();
-			if(controller.publishKnowledgeUnit(opcionProject-1, opcionStage-1, numUnit-1, URL)){
+			if(controller.publishKnowledgeUnit(projectName, opcionStage-1, numUnit-1, URL)){
 				System.out.println("\n-Capsule published correctly-");
 				System.out.println("This is how your capsule was:");
-				System.out.println("\n"+controller.showLastpublisUnit(opcionProject-1, opcionStage-1));
+				System.out.println("\n"+controller.showLastpublisUnit(projectName, opcionStage-1));
 			}
 		
         }
